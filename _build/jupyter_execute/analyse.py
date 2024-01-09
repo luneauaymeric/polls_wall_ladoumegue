@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+# # Résultats du sondage sur le mur de Ladoumègue
+
 # In[1]:
 
 
@@ -34,6 +36,8 @@ dfp = pd.pivot_table(df1, values="Clubs2", index="id", columns= "Clubs2", aggfun
 
 df = df0.merge(dfp, on = ["id"], how = "left")
 
+
+# ## Les clubs d'affiliation
 
 # In[4]:
 
@@ -94,6 +98,8 @@ for n, col in enumerate(df1.Clubs2.unique()):
     fig = px.treemap(dtp, path=[col,"Satisfecit"], values='nb', title = col)
     fig.show()
 
+
+# ## Le niveau des répondant.es
 
 # In[8]:
 
