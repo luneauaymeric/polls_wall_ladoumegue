@@ -1,0 +1,82 @@
+Traceback (most recent call last):
+  File "/home/aymeric/anaconda3/envs/analyse_tweets/lib/python3.9/site-packages/jupyter_cache/executors/utils.py", line 51, in single_nb_execution
+    executenb(
+  File "/home/aymeric/anaconda3/envs/analyse_tweets/lib/python3.9/site-packages/nbclient/client.py", line 1093, in execute
+    return NotebookClient(nb=nb, resources=resources, km=km, **kwargs).execute()
+  File "/home/aymeric/anaconda3/envs/analyse_tweets/lib/python3.9/site-packages/nbclient/util.py", line 84, in wrapped
+    return just_run(coro(*args, **kwargs))
+  File "/home/aymeric/anaconda3/envs/analyse_tweets/lib/python3.9/site-packages/nbclient/util.py", line 62, in just_run
+    return loop.run_until_complete(coro)
+  File "/home/aymeric/anaconda3/envs/analyse_tweets/lib/python3.9/asyncio/base_events.py", line 642, in run_until_complete
+    return future.result()
+  File "/home/aymeric/anaconda3/envs/analyse_tweets/lib/python3.9/site-packages/nbclient/client.py", line 559, in async_execute
+    await self.async_execute_cell(
+  File "/home/aymeric/anaconda3/envs/analyse_tweets/lib/python3.9/site-packages/nbclient/client.py", line 854, in async_execute_cell
+    self._check_raise_for_error(cell, exec_reply)
+  File "/home/aymeric/anaconda3/envs/analyse_tweets/lib/python3.9/site-packages/nbclient/client.py", line 756, in _check_raise_for_error
+    raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
+nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
+------------------
+key1 = [k for k, v in rename_column.items() if v == "Wish_level"][0]
+
+print(key1)
+df2 = df.loc[df["Satisfecit"]=="Non"]
+
+
+d = df2.groupby(["Satisfecit", "Wish_level"]).agg(nb = ("id", "size")).reset_index()
+#dtp = dtp.loc[dtp[col]==1]
+fig = px.treemap(dtp, path=["Satisfecit", "Wish_level"], values='nb')
+fig.show()
+------------------
+
+[0;31m---------------------------------------------------------------------------[0m
+[0;31mValueError[0m                                Traceback (most recent call last)
+Cell [0;32mIn[13], line 9[0m
+[1;32m      7[0m d [38;5;241m=[39m df2[38;5;241m.[39mgroupby([[38;5;124m"[39m[38;5;124mSatisfecit[39m[38;5;124m"[39m, [38;5;124m"[39m[38;5;124mWish_level[39m[38;5;124m"[39m])[38;5;241m.[39magg(nb [38;5;241m=[39m ([38;5;124m"[39m[38;5;124mid[39m[38;5;124m"[39m, [38;5;124m"[39m[38;5;124msize[39m[38;5;124m"[39m))[38;5;241m.[39mreset_index()
+[1;32m      8[0m [38;5;66;03m#dtp = dtp.loc[dtp[col]==1][39;00m
+[0;32m----> 9[0m fig [38;5;241m=[39m [43mpx[49m[38;5;241;43m.[39;49m[43mtreemap[49m[43m([49m[43mdtp[49m[43m,[49m[43m [49m[43mpath[49m[38;5;241;43m=[39;49m[43m[[49m[38;5;124;43m"[39;49m[38;5;124;43mSatisfecit[39;49m[38;5;124;43m"[39;49m[43m,[49m[43m [49m[38;5;124;43m"[39;49m[38;5;124;43mWish_level[39;49m[38;5;124;43m"[39;49m[43m][49m[43m,[49m[43m [49m[43mvalues[49m[38;5;241;43m=[39;49m[38;5;124;43m'[39;49m[38;5;124;43mnb[39;49m[38;5;124;43m'[39;49m[43m)[49m
+[1;32m     10[0m fig[38;5;241m.[39mshow()
+
+File [0;32m~/anaconda3/envs/ladoumegue/lib/python3.12/site-packages/plotly/express/_chart_types.py:1591[0m, in [0;36mtreemap[0;34m(data_frame, names, values, parents, ids, path, color, color_continuous_scale, range_color, color_continuous_midpoint, color_discrete_sequence, color_discrete_map, hover_name, hover_data, custom_data, labels, title, template, width, height, branchvalues, maxdepth)[0m
+[1;32m   1589[0m [38;5;28;01mif[39;00m path [38;5;129;01mis[39;00m [38;5;129;01mnot[39;00m [38;5;28;01mNone[39;00m [38;5;129;01mand[39;00m branchvalues [38;5;129;01mis[39;00m [38;5;28;01mNone[39;00m:
+[1;32m   1590[0m     branchvalues [38;5;241m=[39m [38;5;124m"[39m[38;5;124mtotal[39m[38;5;124m"[39m
+[0;32m-> 1591[0m [38;5;28;01mreturn[39;00m [43mmake_figure[49m[43m([49m
+[1;32m   1592[0m [43m    [49m[43margs[49m[38;5;241;43m=[39;49m[38;5;28;43mlocals[39;49m[43m([49m[43m)[49m[43m,[49m
+[1;32m   1593[0m [43m    [49m[43mconstructor[49m[38;5;241;43m=[39;49m[43mgo[49m[38;5;241;43m.[39;49m[43mTreemap[49m[43m,[49m
+[1;32m   1594[0m [43m    [49m[43mtrace_patch[49m[38;5;241;43m=[39;49m[38;5;28;43mdict[39;49m[43m([49m[43mbranchvalues[49m[38;5;241;43m=[39;49m[43mbranchvalues[49m[43m,[49m[43m [49m[43mmaxdepth[49m[38;5;241;43m=[39;49m[43mmaxdepth[49m[43m)[49m[43m,[49m
+[1;32m   1595[0m [43m    [49m[43mlayout_patch[49m[38;5;241;43m=[39;49m[43mlayout_patch[49m[43m,[49m
+[1;32m   1596[0m [43m[49m[43m)[49m
+
+File [0;32m~/anaconda3/envs/ladoumegue/lib/python3.12/site-packages/plotly/express/_core.py:2076[0m, in [0;36mmake_figure[0;34m(args, constructor, trace_patch, layout_patch)[0m
+[1;32m   2073[0m layout_patch [38;5;241m=[39m layout_patch [38;5;129;01mor[39;00m {}
+[1;32m   2074[0m apply_default_cascade(args)
+[0;32m-> 2076[0m args [38;5;241m=[39m [43mbuild_dataframe[49m[43m([49m[43margs[49m[43m,[49m[43m [49m[43mconstructor[49m[43m)[49m
+[1;32m   2077[0m [38;5;28;01mif[39;00m constructor [38;5;129;01min[39;00m [go[38;5;241m.[39mTreemap, go[38;5;241m.[39mSunburst, go[38;5;241m.[39mIcicle] [38;5;129;01mand[39;00m args[[38;5;124m"[39m[38;5;124mpath[39m[38;5;124m"[39m] [38;5;129;01mis[39;00m [38;5;129;01mnot[39;00m [38;5;28;01mNone[39;00m:
+[1;32m   2078[0m     args [38;5;241m=[39m process_dataframe_hierarchy(args)
+
+File [0;32m~/anaconda3/envs/ladoumegue/lib/python3.12/site-packages/plotly/express/_core.py:1485[0m, in [0;36mbuild_dataframe[0;34m(args, constructor)[0m
+[1;32m   1482[0m     args[[38;5;124m"[39m[38;5;124mcolor[39m[38;5;124m"[39m] [38;5;241m=[39m [38;5;28;01mNone[39;00m
+[1;32m   1483[0m [38;5;66;03m# now that things have been prepped, we do the systematic rewriting of `args`[39;00m
+[0;32m-> 1485[0m df_output, wide_id_vars [38;5;241m=[39m [43mprocess_args_into_dataframe[49m[43m([49m
+[1;32m   1486[0m [43m    [49m[43margs[49m[43m,[49m[43m [49m[43mwide_mode[49m[43m,[49m[43m [49m[43mvar_name[49m[43m,[49m[43m [49m[43mvalue_name[49m
+[1;32m   1487[0m [43m[49m[43m)[49m
+[1;32m   1489[0m [38;5;66;03m# now that `df_output` exists and `args` contains only references, we complete[39;00m
+[1;32m   1490[0m [38;5;66;03m# the special-case and wide-mode handling by further rewriting args and/or mutating[39;00m
+[1;32m   1491[0m [38;5;66;03m# df_output[39;00m
+[1;32m   1493[0m count_name [38;5;241m=[39m _escape_col_name(df_output, [38;5;124m"[39m[38;5;124mcount[39m[38;5;124m"[39m, [var_name, value_name])
+
+File [0;32m~/anaconda3/envs/ladoumegue/lib/python3.12/site-packages/plotly/express/_core.py:1210[0m, in [0;36mprocess_args_into_dataframe[0;34m(args, wide_mode, var_name, value_name)[0m
+[1;32m   1208[0m         [38;5;28;01mif[39;00m argument [38;5;241m==[39m [38;5;124m"[39m[38;5;124mindex[39m[38;5;124m"[39m:
+[1;32m   1209[0m             err_msg [38;5;241m+[39m[38;5;241m=[39m [38;5;124m"[39m[38;5;130;01m\n[39;00m[38;5;124m To use the index, pass it in directly as `df.index`.[39m[38;5;124m"[39m
+[0;32m-> 1210[0m         [38;5;28;01mraise[39;00m [38;5;167;01mValueError[39;00m(err_msg)
+[1;32m   1211[0m [38;5;28;01melif[39;00m length [38;5;129;01mand[39;00m [38;5;28mlen[39m(df_input[argument]) [38;5;241m!=[39m length:
+[1;32m   1212[0m     [38;5;28;01mraise[39;00m [38;5;167;01mValueError[39;00m(
+[1;32m   1213[0m         [38;5;124m"[39m[38;5;124mAll arguments should have the same length. [39m[38;5;124m"[39m
+[1;32m   1214[0m         [38;5;124m"[39m[38;5;124mThe length of column argument `df[[39m[38;5;132;01m%s[39;00m[38;5;124m]` is [39m[38;5;132;01m%d[39;00m[38;5;124m, whereas the [39m[38;5;124m"[39m
+[0;32m   (...)[0m
+[1;32m   1221[0m         )
+[1;32m   1222[0m     )
+
+[0;31mValueError[0m: Value of 'path_1' is not the name of a column in 'data_frame'. Expected one of ['19escalade', 'Satisfecit', 'nb'] but received: Wish_level
+ValueError: Value of 'path_1' is not the name of a column in 'data_frame'. Expected one of ['19escalade', 'Satisfecit', 'nb'] but received: Wish_level
+
