@@ -27,8 +27,8 @@ rename_column = {
       "Grimperiez-vous plus souvent à Ladoumègue s'il y avait plus de voies entre :":'Wish_level2',
       'Actuellement, utilisez-vous le petit mur ?':'petit_mur',
       "Actuellement, utilisez-vous l'espace bloc?":'bloc',
-      'Dans l’ensemble, j’ai trouvé que les cotations étaient':'surcotation',
-      'Dans l’ensemble, j’ai trouvé que les cotations étaient ': 'coherence',
+      "Dans l’ensemble, j’ai trouvé que les cotations étaient":'surcotation',
+      "Dans l’ensemble, j’ai trouvé que les cotations étaient ": "coherence",
       "N'hésitez pas à utiliser le champ ci-dessous si vous souhaitez ajouter un commentaire. Vous pouvez également indiquer votre nom pour qu'on puisse revenir en discuter avec vous." : "Commentaires"
       }
 
@@ -37,6 +37,7 @@ rename_column = {
 
 
 df0 = pd.read_csv("/home/aymeric/python-scripts/polls_wall_ladoumegue/data/convert_mur_ladoumegue_answer.csv", sep =",")
+df0 = df0.rename(columns=rename_column)
 
 
 # In[4]:
@@ -58,9 +59,15 @@ dfp = pd.pivot_table(df1, values="Clubs2", index="id", columns= "Clubs2", aggfun
 df = df0.merge(dfp, on = ["id"], how = "left")
 
 
+# In[5]:
+
+
+figure_folder = "images/"
+
+
 # ## Les clubs d'affiliation
 
-# In[5]:
+# In[6]:
 
 
 
@@ -68,62 +75,127 @@ key = [k for k, v in rename_column.items() if v == 'Clubs'][0]
 print(f"Question posée :  {key}")
 
 
-# In[6]:
+# In[7]:
 
 
-fig, axs = plt.subplots(2, figsize=(15, 10));
+fig, axs = plt.subplots(1, figsize=(15, 10));
 
-dtp1 = df1.groupby(["Clubs2"]).agg(nb =("id", "size")).reset_index()
+dtp1 = df1.groupby(["Clubs2"]).agg(nb =("id", "size")).reset_index().sort_values("nb", ascending = False)
 dtp1["freq"] = dtp1["nb"]/ df1.id.nunique()*100
 
-for n, col in enumerate(["nb", "freq"]):
-    sns.barplot(x = 'Clubs2', y = col, data=dtp1, ax = axs[n]);
-    axs[n].set_xlabel("Clubs", fontsize = 12);
-    if n == 0:
-        axs[n].set_ylabel("Nombre de répondant.es", fontsize = 12);
-    else:
-        axs[n].set_ylabel("Proportion de répondant.es", fontsize = 12);
+
+for n, col in enumerate(["nb"]):
+    sns.barplot(y = 'Clubs2', x = col, data=dtp1, ax = axs);
+    axs.set_ylabel("Clubs", fontsize = 12);
+    axs.set_xlabel("Nombre de répondant.es", fontsize = 12);
+
 
 
 fig.suptitle("Les clubs d'affiliation des répondant.es (une même personne peut être inscrite dans plusieurs clubs", fontsize=16);
 
-
+#fig.savefig(f"{figure_folder}affiliation_club.pdf", dpi=400, format = "pdf")
+fig.savefig(f"{figure_folder}affiliation_club.png", dpi=300, format = "png")
 #fig.show()
+
+
+# # Fréquentation
+
+# In[8]:
+
+
+
+
+ordered_freq = {'Jamais' : 0,
+                'Une fois en deux mois':1,
+                'Une fois par mois':2,
+                'Deux à trois fois par mois':3,
+                'Une fois par semaine':4,
+                'Deux fois par semaine ou plus':5,
+                'Ne se prononce pas':6
+               }
+
+
+# In[9]:
+
+
+fig, axs = plt.subplots(1, figsize=(15, 10));
+
+dtp1 = df.groupby(["Frequentation"]).agg(nb =("id", "size")).reset_index()
+dtp1["freq"] = dtp1["nb"]/ df1.id.nunique()*100
+
+dtp1["Ordering"] = dtp1.Frequentation.map(ordered_freq.get)
+dtp1 = dtp1.sort_values("Ordering", ascending = True)
+
+for n, col in enumerate(["nb"]):
+    sns.barplot(y = 'Frequentation', x = col, data=dtp1, ax = axs);
+    axs.set_ylabel("Fréquentation", fontsize = 12);
+    if n == 0:
+        axs.set_xlabel("Nombre de répondant.es", fontsize = 12);
+    else:
+        axs.set_xabel("Proportion de répondant.es", fontsize = 12);
+
+
+fig.suptitle("La fréquentation du mur", fontsize=16);
+fig.savefig(f"{figure_folder}frequent_mur.png", dpi=300, format = "png")
+
+#fig.show(
 
 
 # ## Le niveau des répondant.es
 
-# In[7]:
+# In[10]:
 
 
-fig, axs = plt.subplots(4, figsize=(15, 30))
+fig, axs = plt.subplots(2, figsize=(15, 20))
+
 
 dtp1 = df.groupby(["level_max"]).agg(nb = ("id", "size")).reset_index()
 dtp1["freq"] = dtp1["nb"]/ df.id.nunique()*100
 dtp2 = df.groupby(["A_vue"]).agg(nb = ("id", "size")).reset_index()
 dtp2["freq"] = dtp2["nb"]/ df.id.nunique()*100
+
+
+for n, col in enumerate([dtp2, dtp1]):
+    fig.suptitle("Le niveau des répondant.es", fontsize=16);
+
+    if n == 0:
+        key = [k for k, v in rename_column.items() if v == "A_vue"][0]
+        #axs[n].set_title(key, fontsize =14)
+        sns.barplot(x = 'A_vue', y = "nb", data=col, ax = axs[n])
+        axs[n].set_xlabel("Niveau à vue", fontsize = 12)
+        
+    elif n == 1:
+        key = [k for k, v in rename_column.items() if v == "level_max"][0]
+        #axs[n].set_title(key, fontsize =14)
+        sns.barplot(x = 'level_max', y = "nb", data=col, ax = axs[n])
+        axs[n].set_xlabel("Niveau max", fontsize = 12)
+        
+
+    axs[n].set_ylabel("Effectif absolu", fontsize = 12)
+
+fig.savefig(f"{figure_folder}niveau.png", dpi=300, format = "png")
+
+
+
+#fig.show()
+
+
+# In[11]:
+
+
+fig, axs = plt.subplots(2, figsize=(15, 20))
+
+
 dtp3 = df.groupby(["niveau_frequent"]).agg(nb = ("id", "size")).reset_index()
 dtp3["freq"] = dtp3["nb"]/ df.id.nunique()*100
 dtp4 = df.loc[df["Wish_level"]!= ""].groupby(["Wish_level"]).agg(nb = ("id", "size")).reset_index()
 
 dtp4["freq"] = dtp4["nb"]/ df.id.nunique()*100
 
-for n, col in enumerate([dtp2, dtp1, dtp3, dtp4]):
+for n, col in enumerate([dtp3, dtp4]):
     fig.suptitle("Le niveau des répondant.es", fontsize=16);
 
     if n == 0:
-        key = [k for k, v in rename_column.items() if v == "A_vue"][0]
-        axs[n].set_title(key, fontsize =14)
-        sns.barplot(x = 'A_vue', y = "nb", data=col, ax = axs[n])
-        axs[n].set_xlabel("Niveau à vue", fontsize = 12)
-        
-    elif n == 1:
-        key = [k for k, v in rename_column.items() if v == "level_max"][0]
-        axs[n].set_title(key, fontsize =14)
-        sns.barplot(x = 'level_max', y = "nb", data=col, ax = axs[n])
-        axs[n].set_xlabel("Niveau max", fontsize = 12)
-        
-    elif n == 2:
         key = [k for k, v in rename_column.items() if v == "niveau_frequent"][0]
         axs[n].set_title(key, fontsize =14)
         sns.barplot(x = 'niveau_frequent', y = "nb", data=col, ax = axs[n])
@@ -136,50 +208,62 @@ for n, col in enumerate([dtp2, dtp1, dtp3, dtp4]):
     axs[n].set_ylabel("Effectif absolu", fontsize = 12)
 
 
-
-
-
-#fig.show()
+fig.savefig(f"{figure_folder}niveau_plus_frequent.png", dpi=300, format = "png")
 
 
 # ## Répartition des niveaux à vue au sein des clubs
 # 
 # Pour rappel, une même personne peut être licenciée de plusieurs clubs.
 
-# In[8]:
+# In[12]:
 
 
+fig, axs = plt.subplots(df1.Clubs2.nunique(), figsize=(15, 35))
 key = [k for k, v in rename_column.items() if v == "A_vue"][0]
 print(key)
 
 for n, col in enumerate(df1.Clubs2.unique()):
-    dtp = df.groupby([col,"A_vue"]).agg(nb = (col, "sum")).reset_index()
-    fig = px.treemap(dtp, path=[col,"A_vue"], values='nb', title = f"Les niveaux à vue des adhérent.es de {col}")
-    fig.show()
+    
+    dtp = df.groupby([col, "A_vue"]).agg(nb = (col, "sum")).reset_index()
+    dtp = dtp.loc[dtp[col]==1]
+    axs[n].set_title(col, fontsize =14)
+
+    sns.barplot(x = 'A_vue', y = "nb", data=dtp, ax = axs[n])
+    axs[n].set_xlabel("Niveau à vue", fontsize = 12)
+
+fig.savefig(f"{figure_folder}niveau_avue_club.png", dpi=300, format = "png")
 
 
 # ## Répartition des niveaux max au sein des clubs
 # 
 
-# In[9]:
+# In[13]:
 
 
+fig, axs = plt.subplots(df1.Clubs2.nunique(), figsize=(15, 35))
 key = [k for k, v in rename_column.items() if v == "level_max"][0]
 print(key)
 
 for n, col in enumerate(df1.Clubs2.unique()):
-    dtp = df.groupby([col,"level_max"]).agg(nb = (col, "sum")).reset_index()
-    fig = px.treemap(dtp, path=[col,"level_max"], values='nb', title = f"Les niveaux max des adhérent.es de {col}")
-    fig.show()
+    
+    dtp = df.groupby([col, "level_max"]).agg(nb = (col, "sum")).reset_index()
+    dtp = dtp.loc[dtp[col]==1]
+    axs[n].set_title(col, fontsize =14)
+
+    sns.barplot(x = 'level_max', y = "nb", data=dtp, ax = axs[n])
+    axs[n].set_xlabel("Niveau max", fontsize = 12)
+
+fig.savefig(f"{figure_folder}niveau_max_club.png", dpi=300, format = "png")
 
 
 # ## Satisfaction de la répartition des cotations
 #  
 #  ### Satisfaction en fonction du niveau à vue
 
-# In[10]:
+# In[14]:
 
 
+fig, axs = plt.subplots(1, figsize=(15, 15))
 key1 = [k for k, v in rename_column.items() if v == "Satisfecit"][0]
 key2 = [k for k, v in rename_column.items() if v == "A_vue"][0]
 print(f"Croisement des questions suviantes : ")
@@ -188,14 +272,19 @@ print(f"2) {key2}")
 
 
 d = df.groupby(["Satisfecit","A_vue"]).agg(nb = ("id", "size")).reset_index()
-fig = px.treemap(d, path=["Satisfecit","A_vue"], values='nb', title = "La satisfaction et le niveau à vue")
-fig
+d = d.loc[d["A_vue"]!="Ne se prononce pas"]
+sns.barplot(y = 'A_vue', x = "nb", data=d,  hue ="Satisfecit", ax = axs);
+axs.set_xlabel("Niveau à vue", fontsize = 12)
+
+fig.savefig(f"{figure_folder}satisfecit_niveau_a_vue.png", dpi=300, format = "png")
 
 
 # ### Satisfaction en fonction du niveau max
 
-# In[11]:
+# In[15]:
 
+
+fig, axs = plt.subplots(1, figsize=(15, 15))
 
 key1 = [k for k, v in rename_column.items() if v == "Satisfecit"][0]
 key2 = [k for k, v in rename_column.items() if v == "level_max"][0]
@@ -204,15 +293,19 @@ print(f"1) {key1}")
 print(f"2) {key2}")
 
 d = df.groupby(["Satisfecit","level_max"]).agg(nb = ("id", "size")).reset_index()
-fig = px.treemap(d, path=["Satisfecit","level_max"], values='nb', title = "La satisfaction et le niveau max")
-fig
+d = d.loc[d["level_max"]!="Ne se prononce pas"]
+sns.barplot(y = 'level_max', x = "nb", data=d,  hue ="Satisfecit", ax = axs);
+axs.set_xlabel("Niveau max", fontsize = 12)
+
+fig.savefig(f"{figure_folder}satisfecti_niveau_max.png", dpi=300, format = "png")
 
 
 # ### Satisfaction de la distribution des niveaux de voies par club.
 
-# In[12]:
+# In[16]:
 
 
+fig, axs = plt.subplots(df1.Clubs2.nunique(), figsize=(15, 30))
 key1 = [k for k, v in rename_column.items() if v == "Satisfecit"][0]
 
 print(key1)
@@ -220,48 +313,54 @@ print(key1)
 for n, col in enumerate(df1.Clubs2.unique()):
     dtp = df.groupby([col,"Satisfecit"]).agg(nb = ("id", "size")).reset_index()
     dtp = dtp.loc[dtp[col]==1]
-    fig = px.treemap(dtp, path=[col,"Satisfecit"], values='nb', title = col)
-    fig.show()
+    axs[n].set_title(col, fontsize =14)
+    sns.barplot(y = "Satisfecit", x = "nb", data=dtp, ax = axs[n]);
+    axs[n].set_xlabel("Club", fontsize = 12)
+
+fig.savefig(f"{figure_folder}satisfecti_club.png", dpi=300, format = "png")
 
 
 # ## Les personnes non satisfaites
 #  
 #  ### Les personnes non satisfaites et le niveau qu'elles souhaitent rencontrer plus souvent
 
-# In[13]:
+# In[17]:
 
 
-key1 = [k for k, v in rename_column.items() if v == "Wish_level"][0]
-
-print(key1)
+fig, axs = plt.subplots(1, figsize=(15, 10))
 df2 = df.loc[df["Satisfecit"]=="Non"]
 
 
 dtp = df2.groupby(["Satisfecit", "Wish_level"]).agg(nb = ("id", "size")).reset_index()
-#dtp = dtp.loc[dtp[col]==1]
-fig = px.treemap(dtp, path=["Satisfecit", "Wish_level"], values='nb')
-fig.show()
+
+sns.barplot(x = 'Wish_level', y = "nb", data=dtp, ax = axs);
+axs.set_xlabel("Niveau souhaité", fontsize = 12)
+
+fig.savefig(f"{figure_folder}satisfecti_niveau_souhaite.png", dpi=300, format = "png")
 
 
 # ### Les personnes non satisfaites et le niveau qu'elles souhaitent rencontrer plus souvent en fonction du club
 
-# In[14]:
+# In[18]:
 
 
-key1 = [k for k, v in rename_column.items() if v == "Wish_level"][0]
+fig, axs = plt.subplots(3, figsize=(15, 30))
 
 print(key1)
 df2 = df.loc[(df["Satisfecit"]=="Non")]
 df2 = df2.loc[~df2["Satisfecit"].isna()]
 
-for n, col in enumerate(df1.Clubs2.unique()):
+for n, col in enumerate(["cimes19","caf/ffcam","19escalade"]):
     dtp = df2.groupby([col,"Wish_level"]).agg(nb = ("id", "size")).reset_index()
     dtp = dtp.loc[dtp[col]==1]
-    if len(dtp)> 0 :
-        fig = px.treemap(dtp, path=[col,"Wish_level"], values='nb', title = col)
-        fig.show()
+    if len(dtp)> 1 :
+        axs[n].set_title(col, fontsize =14)
+        sns.barplot(x = 'Wish_level', y = "nb", data=dtp, ax = axs[n]);
+        axs[n].set_xlabel("Niveau souhaité", fontsize = 12)
     else:
         pass
+    
+fig.savefig(f"{figure_folder}satisfecti_niveau_souhaite_by_club.png", dpi=300, format = "png")
 
 
 # In[ ]:
